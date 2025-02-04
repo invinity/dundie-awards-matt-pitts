@@ -1,18 +1,10 @@
 package com.ninjaone.dundie_awards.controller;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.ninjaone.dundie_awards.AwardsCache;
-import com.ninjaone.dundie_awards.MessageBroker;
-import com.ninjaone.dundie_awards.model.Activity;
-import com.ninjaone.dundie_awards.model.Employee;
-import com.ninjaone.dundie_awards.repository.ActivityRepository;
-import com.ninjaone.dundie_awards.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +17,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.ninjaone.dundie_awards.AwardsCache;
+import com.ninjaone.dundie_awards.MessageBroker;
+import com.ninjaone.dundie_awards.model.Employee;
+import com.ninjaone.dundie_awards.repository.ActivityRepository;
+import com.ninjaone.dundie_awards.repository.EmployeeRepository;
 
 @Controller
 @RequestMapping()
@@ -72,17 +70,13 @@ public class EmployeeController {
     @PutMapping("/employees/{id}")
     @ResponseBody
     public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails) {
-        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
-        if (!optionalEmployee.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        Employee employee = optionalEmployee.get();
-        employee.setFirstName(employeeDetails.getFirstName());
-        employee.setLastName(employeeDetails.getLastName());
-
-        Employee updatedEmployee = employeeRepository.save(employee);
-        return ResponseEntity.ok(updatedEmployee);
+        return employeeRepository.findById(id).map(existing -> {
+            existing.setFirstName(employeeDetails.getFirstName());
+            existing.setLastName(employeeDetails.getLastName());
+            existing.setOrganization(employeeDetails.getOrganization());
+            existing.setDundieAwards(employeeDetails.getDundieAwards());
+            return ResponseEntity.ok(employeeRepository.save(existing));
+        }).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     // delete employee rest api
