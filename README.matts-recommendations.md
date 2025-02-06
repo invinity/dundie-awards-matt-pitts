@@ -7,10 +7,11 @@ Below are individual sections categorizing the recommendations I have for this p
 2. Enabled branch protection with code quality checks
 3. Setup API Tokens for Github Actions to be able to interact with the project
 
-## CI/CD
+## Gradle build & CI/CD
 1. Added Github Actions to execute Gradle build and test
 2. Added Gradle jacoco plugin and Github Actions to perform Test Coverage analysis
 3. Added Github Actions to construct Docker, publish and deploy into AWS ECS
+4. Added `org.springframework.boot:spring-boot-devtools` for more convenient local development
 
 ## General Application/Code
 1. References springdoc in config, but doesn't include it in gradle
@@ -24,11 +25,17 @@ Below are individual sections categorizing the recommendations I have for this p
     - Removed boilerplate getter/setter/constructor code
 5. No javadoc
     - Recommend writing javadoc along with publishing javadoc-jar as a general best-practise
+    - Added javadoc in several places
+6. JPA Entity types don't have `@Version` field
+    - The `@Version` field is very useful as it applies a built-in Optimistic locking strategy when performing entity updates
+    - This helps to avoid lost changes when two copies of the same object are updated simultaneously across the application
+
 
 ## REST Layer
 
 ### OpenAPI Spec
 1. Make use of springdoc to annotate and document the expected HTTP payloads and responses
+    - added `@Operation` declarations to provide 1-1 match b/t generated OpenAPI Spec and what the service expects
 
 ### EmployeeController
 1. No way to update `Employee`'s `organziation` on an existing record
@@ -43,6 +50,8 @@ Below are individual sections categorizing the recommendations I have for this p
     - Controllers should just be a demarcation layer b/t a backend service and the appropriate HTTP/REST responses
     - Something like caching should be abstracted out in another layer
     - The `@Cacheable` annotation can be used to apply built-in caching mechansims from Spring-Data
+5. `/employees` REST path is specified in every mapped method, rather than at the Controller class-level
+    - fixed
 
 ### No controller for `Organization`s
 

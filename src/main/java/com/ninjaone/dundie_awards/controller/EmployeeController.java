@@ -25,37 +25,42 @@ import com.ninjaone.dundie_awards.repository.ActivityRepository;
 import com.ninjaone.dundie_awards.repository.EmployeeRepository;
 
 @Controller
-@RequestMapping()
+@RequestMapping("/employees")
+@lombok.RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EmployeeController {
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
+    private final EmployeeRepository employeeRepository;
+    private final ActivityRepository activityRepository;
+    private final MessageBroker messageBroker;
+    private final AwardsCache awardsCache;
 
-    @Autowired
-    private ActivityRepository activityRepository;
-
-    @Autowired
-    private MessageBroker messageBroker;
-
-    @Autowired
-    private AwardsCache awardsCache;
-
-    // get all employees
-    @GetMapping("/employees")
+    /**
+     * Get all employees
+     * @return
+     */
+    @GetMapping
     @ResponseBody
     public List<Employee> getAllEmployees() {
         return employeeRepository.findAll();
     }
 
-    // create employee rest api
-    @PostMapping("/employees")
+    /**
+     * Create employee
+     * @param employee
+     * @return
+     */
+    @PostMapping
     @ResponseBody
     public Employee createEmployee(@RequestBody Employee employee) {
         return employeeRepository.save(employee);
     }
 
-    // get employee by id rest api
-    @GetMapping("/employees/{id}")
+    /**
+     * Get employee by id
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
     @ResponseBody
     public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
@@ -66,8 +71,13 @@ public class EmployeeController {
         }
     }
 
-    // update employee rest api
-    @PutMapping("/employees/{id}")
+    /**
+     * Update employee by id
+     * @param id
+     * @param employeeDetails
+     * @return
+     */
+    @PutMapping("/{id}")
     @ResponseBody
     public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails) {
         return employeeRepository.findById(id).map(existing -> {
@@ -79,8 +89,12 @@ public class EmployeeController {
         }).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    // delete employee rest api
-    @DeleteMapping("/employees/{id}")
+    /**
+     * Delete employee by id
+     * @param id
+     * @return
+     */
+    @DeleteMapping("/{id}")
     @ResponseBody
     public ResponseEntity<Map<String, Boolean>> deleteEmployee(@PathVariable Long id) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);

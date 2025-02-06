@@ -29,7 +29,7 @@ class OrganizationTest {
 
     @Test
     void all_args_constructor_should_function_properly() {
-        Organization organization = new Organization(1L, "NinjaOne");
+        Organization organization = new Organization(1L, 1, "NinjaOne");
         assertThat(organization, notNullValue());
         assertThat(organization.getId(), is(1L));
         assertThat(organization.getName(), is("NinjaOne"));
@@ -37,16 +37,20 @@ class OrganizationTest {
 
     @Test
     void equals_and_hashcode_should_function_properly() {
-        Organization org1 = new Organization(1L, "NinjaOne");
-        Organization org2 = new Organization(1L, "NinjaOne");
-        Organization org3 = new Organization(2L, "NinjaTwo");
-        Organization org4 = new Organization(3L, "NinjaOne");
+        Organization org1 = new Organization(1L, 1, "NinjaOne");
+        Organization org2 = new Organization(1L, 1, "NinjaOne");
+        Organization org3 = new Organization(2L, 2, "NinjaTwo");
+        Organization org4 = new Organization(3L, 3, "NinjaOne");
+        Organization org5 = new Organization(3L, 4, "NinjaThree");
+        Organization org6 = new Organization(3L, 5, "NinjaThree");
 
         assertThat(org2, is(org1));
         assertThat(org3, not(org1));
         assertThat(org4, not(org1));
+        assertThat(org6, not(org5));
         assertThat(org2.hashCode(), is(org1.hashCode()));
         assertThat(org3.hashCode(), not(org1.hashCode()));
         assertThat(org4.hashCode(), not(org1.hashCode()));
+        assertThat(org6.hashCode(), not(org5.hashCode()));
     }
 }

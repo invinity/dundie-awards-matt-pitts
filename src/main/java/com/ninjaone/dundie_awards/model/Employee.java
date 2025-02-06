@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "employees")
 @lombok.Data
-@lombok.EqualsAndHashCode(of = {"id", "firstName", "lastName"})
+@lombok.EqualsAndHashCode(of = {"id", "version", "firstName", "lastName"})
 @lombok.AllArgsConstructor
 @lombok.NoArgsConstructor
 @lombok.Builder(builderClassName = "Builder")
@@ -14,6 +14,9 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Version
+    private Integer version;
+
     @Column(name = "first_name")
     private String firstName;
 
@@ -21,7 +24,7 @@ public class Employee {
     private String lastName;
 
     @Column(name = "dundie_awards")
-    private Integer dundieAwards;
+    private int dundieAwards;
 
     @ManyToOne
     private Organization organization;
