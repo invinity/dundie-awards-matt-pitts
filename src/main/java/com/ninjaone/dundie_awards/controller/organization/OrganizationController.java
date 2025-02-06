@@ -59,13 +59,16 @@ public class OrganizationController {
     @ResponseBody
     @Operation(summary = "Perform organization-wide employee actions",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = {
-                    @Content(schema = @Schema(implementation = GiveDundieAwardsAction.class))}),
+                    @Content(
+                        schema = @Schema(implementation = GiveDundieAwardsAction.class), 
+                        examples = {
+                                @ExampleObject(
+                                   name = "GiveDundieAwardsAction",
+                                   value = "{\"type\": \"GiveDundieAwardsAction\", \"awardCount\": 5}")})}),
             responses = {@ApiResponse(responseCode = "200",
                     description = "Employee action performed successfully",
                     content = {@Content(
-                            schema = @Schema(implementation = GiveDundieAwardsResult.class),
-                            examples = {@ExampleObject(name = "GiveDundieAwardsAction",
-                                    value = "{\"type\": \"GiveDundieAwardsAction\", \"awardCount\": 5}")})}),
+                            schema = @Schema(implementation = GiveDundieAwardsResult.class))}),
                     @ApiResponse(responseCode = "400",
                             description = "The given request body could not be processed as a valid action",
                             content = @Content),
