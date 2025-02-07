@@ -3,6 +3,9 @@ package com.ninjaone.dundie_awards.controller.organization;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+/**
+ * Generic type for all actions that can be performed on employees in an organization
+ */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = OrganizationEmployeeAction.GiveDundieAwardsAction.class, name = "GiveDundieAwardsAction")
@@ -16,6 +19,9 @@ public interface OrganizationEmployeeAction {
         return this.getClass().getSimpleName();
     }
 
+    /**
+     * REST POST payload {@link OrganizationEmployeeAction} to give Dundie awards to employees
+     */
     @lombok.Data
     @lombok.RequiredArgsConstructor
     @lombok.AllArgsConstructor

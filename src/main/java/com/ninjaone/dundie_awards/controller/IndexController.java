@@ -13,19 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/")
+@lombok.RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class IndexController {
-
-    @Autowired
-    private EmployeeRepository employeeRepository;
-
-    @Autowired
-    private ActivityRepository activityRepository;
-
-    @Autowired
-    private MessageBroker messageBroker;
-
-    @Autowired
-    private AwardsCache awardsCache;
+    private final EmployeeRepository employeeRepository;
+    private final ActivityRepository activityRepository;
+    private final MessageBroker messageBroker;
+    private final AwardsCache awardsCache;
 
     @GetMapping()
     public String getIndex(Model model) {

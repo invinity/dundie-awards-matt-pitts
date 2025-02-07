@@ -16,6 +16,7 @@ import com.ninjaone.dundie_awards.model.Employee;
 import com.ninjaone.dundie_awards.model.Organization;
 import com.ninjaone.dundie_awards.repository.EmployeeRepository;
 import com.ninjaone.dundie_awards.repository.OrganizationRepository;
+import com.ninjaone.dundie_awards.service.GiveDundieAwardsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -28,6 +29,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 public class OrganizationController {
     private final OrganizationRepository organizationRepository;
     private final EmployeeRepository employeeRepository;
+    private final GiveDundieAwardsService giveDundieAwardsService;
 
     @GetMapping("/{id}/employees")
     @ResponseBody
@@ -97,8 +99,8 @@ public class OrganizationController {
             Organization organization, OrganizationEmployeeAction action) {
         if (action instanceof GiveDundieAwardsAction) {
             GiveDundieAwardsAction giveDundieAwards = (GiveDundieAwardsAction) action;
-            int updateCount = employeeRepository.addDundieAwardsByOrganization(organization,
-                    giveDundieAwards.getAwardCount());
+            int updateCount = giveDundieAwardsService.giveDundieAwardsByOrganization(
+                    organization, giveDundieAwards.getAwardCount());
             return ResponseEntity
                     .ok(GiveDundieAwardsResult.builder().employeeUpdateCount(updateCount).build());
         }
