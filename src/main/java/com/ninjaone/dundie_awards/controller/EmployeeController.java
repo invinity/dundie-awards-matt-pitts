@@ -18,10 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ninjaone.dundie_awards.AwardsCache;
-import com.ninjaone.dundie_awards.MessageBroker;
 import com.ninjaone.dundie_awards.model.Employee;
-import com.ninjaone.dundie_awards.repository.ActivityRepository;
 import com.ninjaone.dundie_awards.repository.EmployeeRepository;
 
 @Controller
@@ -30,9 +27,6 @@ import com.ninjaone.dundie_awards.repository.EmployeeRepository;
 public class EmployeeController {
 
     private final EmployeeRepository employeeRepository;
-    private final ActivityRepository activityRepository;
-    private final MessageBroker messageBroker;
-    private final AwardsCache awardsCache;
 
     /**
      * Get all employees

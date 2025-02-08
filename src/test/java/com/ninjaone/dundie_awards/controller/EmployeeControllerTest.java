@@ -27,7 +27,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ninjaone.dundie_awards.AwardsCache;
-import com.ninjaone.dundie_awards.MessageBroker;
 import com.ninjaone.dundie_awards.model.Employee;
 import com.ninjaone.dundie_awards.model.Organization;
 import com.ninjaone.dundie_awards.repository.ActivityRepository;
@@ -47,9 +46,6 @@ public class EmployeeControllerTest {
 
     @MockBean
     private ActivityRepository activityRepository;
-
-    @MockBean
-    private MessageBroker messageBroker;
 
     @InjectMocks
     private EmployeeController employeeController;
