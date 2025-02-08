@@ -1,19 +1,12 @@
 package com.ninjaone.dundie_awards.service;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.aMapWithSize;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -23,14 +16,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import com.ninjaone.dundie_awards.AwardsCache;
-import com.ninjaone.dundie_awards.config.TransactionManagementConfig;
 import com.ninjaone.dundie_awards.model.Employee;
 import com.ninjaone.dundie_awards.model.Organization;
 import com.ninjaone.dundie_awards.repository.ActivityRepository;
