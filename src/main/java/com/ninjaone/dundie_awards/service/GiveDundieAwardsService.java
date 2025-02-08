@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 @lombok.Getter
 @Slf4j
 public class GiveDundieAwardsService {
-    private static final String DUNDIE_MESSAGES_QUEUE = "dundie-messages";
+    public static final String DUNDIE_MESSAGES_QUEUE = "dundie-messages";
     private final EmployeeRepository employeeRepository;
     private final ActivityRepository activityRepository;
     private final AwardsCache awardsCache;
