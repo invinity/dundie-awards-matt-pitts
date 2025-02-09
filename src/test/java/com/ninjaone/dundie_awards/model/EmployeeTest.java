@@ -33,7 +33,7 @@ class EmployeeTest {
     @Test
     void all_args_constructor_should_function_properly() {
         Organization org = new Organization();
-        Employee employee = new Employee(1L, 1, "Jane", "Doe", 3, org);
+        Employee employee = new Employee(1L, 1L, "Jane", "Doe", 3, org);
 
         assertThat(employee, notNullValue());
         assertThat(employee.getId(), is(1L));
@@ -47,10 +47,10 @@ class EmployeeTest {
     @Test
     void hashcode_and_equals_should_function_properly() {
         Organization org = new Organization();
-        Employee employee1 = new Employee(1L, 1, "Jane", "Doe", 3, org);
-        Employee employee2 = new Employee(1L, 1, "Jane", "Doe", 3, org);
-        Employee employee3 = new Employee(1L, 1, "John", "Doe", 1, org);
-        Employee employee4 = new Employee(2L, 2, "John", "Doe", 1, org);
+        Employee employee1 = new Employee(1L, 1L, "Jane", "Doe", 3, org);
+        Employee employee2 = new Employee(1L, 1L, "Jane", "Doe", 3, org);
+        Employee employee3 = new Employee(1L, 1L, "John", "Doe", 1, org);
+        Employee employee4 = new Employee(2L, 2L, "John", "Doe", 1, org);
         assertThat(employee1, is(employee2));
         assertThat(employee1, not(employee3));
         assertThat(employee4, not(employee3));

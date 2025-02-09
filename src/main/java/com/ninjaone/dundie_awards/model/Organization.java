@@ -12,10 +12,11 @@ import jakarta.persistence.*;
 public class Organization {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
 
   @Version
-  private Integer version;
+  @Column(name = "version")
+  private Long version;
 
   @Column(name = "name")
   private String name;

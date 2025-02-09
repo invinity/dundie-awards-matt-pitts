@@ -16,10 +16,11 @@ import java.time.LocalDateTime;
 public class Activity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Version
-    private Integer version;
+    @Column(name = "version")
+    private Long version;
 
     @Column(name = "occurred_at")
     private LocalDateTime occurredAt;

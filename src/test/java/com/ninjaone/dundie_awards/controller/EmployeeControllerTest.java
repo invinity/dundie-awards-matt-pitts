@@ -85,8 +85,8 @@ public class EmployeeControllerTest {
     @Test
     void post_on_root_resource_with_an_organization_reference_should_create_new_employee_and_return_json()
             throws Exception {
-        Employee emp = Employee.builder().id(1).firstName("Matt").lastName("Pitts")
-                .organization(Organization.builder().id(1).name("testorg").build()).build();
+        Employee emp = Employee.builder().id(1L).firstName("Matt").lastName("Pitts")
+                .organization(Organization.builder().id(1L).name("testorg").build()).build();
         when(employeeRepository.save(any(Employee.class))).thenReturn(emp);
 
         mockMvc.perform(post("/employees")
