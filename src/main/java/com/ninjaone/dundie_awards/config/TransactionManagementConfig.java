@@ -1,8 +1,8 @@
 package com.ninjaone.dundie_awards.config;
 
-import com.atomikos.icatch.jta.UserTransactionImp;
-import com.atomikos.icatch.jta.UserTransactionManager;
-import com.atomikos.spring.AtomikosConnectionFactoryBean;
+// import com.atomikos.icatch.jta.UserTransactionImp;
+// import com.atomikos.icatch.jta.UserTransactionManager;
+// import com.atomikos.spring.AtomikosConnectionFactoryBean;
 
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.JMSException;
