@@ -12,6 +12,16 @@ spring:
     driverClassName: org.h2.Driver
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      jakarta:
+        persistence:
+          transactionType: JTA
+      hibernate:
+        transaction:
+          jta:
+            platform: org.hibernate.engine.transaction.jta.platform.internal.AtomikosJtaPlatform
+    hibernate:
+      ddl-auto: update
 #  datasource:
 #    url: jdbc:postgresql://localhost:5432/postgres
 #    username: postgres

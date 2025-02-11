@@ -22,6 +22,11 @@ repositories {
 dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
+	implementation 'com.atomikos:transactions-spring-boot3-starter:6.0.0'
+	implementation 'com.atomikos:transactions-jta:6.0.0@jakarta'
+	implementation 'com.atomikos:transactions-jdbc:6.0.0@jakarta'
+	implementation 'com.atomikos:transactions-jms:6.0.0@jakarta'
+
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
@@ -34,6 +39,7 @@ dependencies {
 	runtimeOnly 'org.apache.activemq:artemis-jakarta-server'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'com.atomikos:transactions-spring-boot3-integration-tests:6.0.0'
 }
 
 tasks.named('test') {

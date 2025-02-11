@@ -1,15 +1,16 @@
 package com.ninjaone.dundie_awards.config;
 
-// import com.atomikos.icatch.jta.UserTransactionImp;
-// import com.atomikos.icatch.jta.UserTransactionManager;
-// import com.atomikos.spring.AtomikosConnectionFactoryBean;
-
+import com.atomikos.icatch.jta.UserTransactionImp;
+import com.atomikos.icatch.jta.UserTransactionManager;
+import com.atomikos.spring.AtomikosConnectionFactoryBean;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.JMSException;
 import jakarta.transaction.TransactionManager;
 import jakarta.transaction.UserTransaction;
 
 import org.apache.activemq.artemis.jms.client.ActiveMQXAConnectionFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.context.properties.bind.Name;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -18,37 +19,36 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.jta.JtaTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @Configuration
 @EnableTransactionManagement
 public class TransactionManagementConfig {
-    // @Bean(name = "userTransaction")
-    // public UserTransaction userTransaction() throws Throwable {
-    //     UserTransactionImp userTransactionImp = new UserTransactionImp();
-    //     userTransactionImp.setTransactionTimeout(10000);
-    //     return userTransactionImp;
-    // }
+    @Bean
+    @Qualifier("userTransaction")
+    public UserTransaction userTransaction() throws Throwable {
+        UserTransactionImp userTransactionImp = new UserTransactionImp();
+        userTransactionImp.setTransactionTimeout(10);
+        return userTransactionImp;
+    }
 
-    // @Bean(name = "atomikosTransactionManager", initMethod = "init", destroyMethod = "close")
-    // public TransactionManager atomikosTransactionManager() throws Throwable {
-    //     UserTransactionManager userTransactionManager = new UserTransactionManager();
-    //     userTransactionManager.setForceShutdown(false);
+    @Qualifier("atomikosTransactionManager")
+    @Bean(initMethod = "init", destroyMethod = "close")
+    public UserTransactionManager atomikosTransactionManager() throws Throwable {
+        UserTransactionManager userTransactionManager = new UserTransactionManager();
+        userTransactionManager.setForceShutdown(false);
+        return userTransactionManager;
+    }
 
-    //     AtomikosJtaPlatform.transactionManager = userTransactionManager;
+    @Bean
+    public PlatformTransactionManager transactionManager(@Qualifier("userTransaction") UserTransaction userTransaction, @Qualifier("atomikosTransactionManager") UserTransactionManager atomikosTransactionManager) throws Throwable {
+        return new JtaTransactionManager(userTransaction, atomikosTransactionManager);
+    }
 
-    //     return userTransactionManager;
-    // }
-
-    // @Bean(name = "transactionManager")
-    // @DependsOn({ "userTransaction", "atomikosTransactionManager" })
-    // public PlatformTransactionManager transactionManager() throws Throwable {
-    //     UserTransaction userTransaction = userTransaction();
-
-    //     AtomikosJtaPlatform.transaction = userTransaction;
-
-    //     TransactionManager atomikosTransactionManager = atomikosTransactionManager();
-    //     return new JtaTransactionManager(userTransaction, atomikosTransactionManager);
-    // }
+    @Bean
+    public TransactionTemplate transactionTemplate(PlatformTransactionManager transactionManager) {
+        return new TransactionTemplate(transactionManager);
+    }
 
     // @Bean
     // public DefaultMessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory,

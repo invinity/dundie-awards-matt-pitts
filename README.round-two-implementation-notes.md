@@ -51,12 +51,13 @@
 ### How I accomplished the above NF and NFR
 1. Added *JMS* capabilities to the springboot application
 1. Added *JTA* capabilities to the springboot application
+    - Used the *Atomikos* implementation
 1. Centralized the award-giving business logic into a new spring `@Service` called `GiveDundieAwardsService`
 1. This Service has a method `giveDundieAwardsByOrganization` that:
     1. Uses dependencies:
         - `EmployeeRepository`
         - `JmsTemplate`
-    1. To perform *both* of the following in a single, XA transaction:
+    1. And performs *both* of the following in a single, JTA transaction:
         1. The award-giving update across all `Employee`s in a given `Organization`
         1. Inserts a message into the message-queue indicating this activity took place
             - The message is a serializable object type carrying meta information about the award-giving activity
