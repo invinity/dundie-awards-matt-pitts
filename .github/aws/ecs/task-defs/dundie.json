@@ -1,5 +1,5 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:339712756342:task-definition/dundie-app:48",
+    "family": "dundie-app",
     "containerDefinitions": [
         {
             "name": "dundie-app",
@@ -14,9 +14,6 @@
                 }
             ],
             "essential": true,
-            "environment": [],
-            "mountPoints": [],
-            "volumesFrom": [],
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
@@ -27,46 +24,11 @@
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
-            },
-            "systemControls": []
+            }
         }
     ],
-    "family": "dundie-app",
     "executionRoleArn": "arn:aws:iam::339712756342:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 48,
-    "volumes": [],
-    "status": "ACTIVE",
-    "requiresAttributes": [
-        {
-            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
-        },
-        {
-            "name": "ecs.capability.execution-role-awslogs"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.ecr-auth"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.28"
-        },
-        {
-            "name": "ecs.capability.execution-role-ecr-pull"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
-        },
-        {
-            "name": "ecs.capability.task-eni"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
-        }
-    ],
-    "placementConstraints": [],
     "requiresCompatibilities": [
         "FARGATE"
     ],
@@ -76,6 +38,5 @@
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "enableFaultInjection": false,
-    "tags": []
+    "enableFaultInjection": false
 }
