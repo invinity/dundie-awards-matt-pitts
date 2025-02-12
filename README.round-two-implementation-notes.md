@@ -21,6 +21,7 @@ This PR represents work that I did to the original dundie-awards application for
 - Centralized business logic into `@Service` classes
 - `EmployeeController` now only requires a single injected dependency
 - Added use of JPA `@Version` for proper optimistic locking
+- Added CI/CD to the project in Github using Github Actions to build, test and deploy into AWS ECS
 ## 3. Finish Message Broker Implementation 
 > Complete the implementation of the Message Broker by either introducing a library or creating a basic publish/subscribe mechanism. 
 - Applied the use of JMS via the `@EnableJms` Spring annotation
