@@ -133,7 +133,25 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    void put_to_single_employee_url_should_update_the_employee_organization_and_dundieawards_as_appropriate()
+    void put_to_single_employee_url_should_update_the_employee_organization_when_specified()
+            throws Exception {
+        when(employeeRepository.findById(1L)).thenReturn(Optional.of(employee1));
+        when(employeeRepository.save(any(Employee.class))).thenReturn(employee1);
+
+        Employee updatedEmployee = Employee.builder().firstName("John").lastName("Dundie")
+                .organization(Organization.builder().name("neworg").build()).dundieAwards(800).build();
+
+        mockMvc.perform(put("/employees/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(updatedEmployee)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value("John"))
+                .andExpect(jsonPath("$.lastName").value("Dundie"))
+                .andExpect(jsonPath("$.organization.name").value("neworg"));
+    }
+
+    @Test
+    void put_to_single_employee_url_should_not_update_dundieAwards_count_even_when_specified()
             throws Exception {
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(employee1));
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee1);
@@ -148,7 +166,7 @@ public class EmployeeControllerTest {
                 .andExpect(jsonPath("$.firstName").value("John"))
                 .andExpect(jsonPath("$.lastName").value("Dundie"))
                 .andExpect(jsonPath("$.organization.name").value("neworg"))
-                .andExpect(jsonPath("$.dundieAwards").value(800));
+                .andExpect(jsonPath("$.dundieAwards").value(0));
     }
 
     @Test

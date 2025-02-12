@@ -1,4 +1,4 @@
-FROM openjdk:23-jdk
+FROM openjdk:17-jdk
 RUN groupadd spring && useradd spring -g spring
 USER spring:spring
 ARG JAR_FILE=build/libs/*.jar
