@@ -40,7 +40,7 @@ jobs:
       uses: actions/cache/save@v4
       with:
         path: ./build/libs/*.jar
-        key: 'built-jars'
+        key: ${{ github.run_id }}-built-jars
 
     - name: Gradle Jacoco Test Report
       run: ./gradlew jacocoTestReport
@@ -84,7 +84,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ./build/libs/*.jar
-          key: 'built-jars'
+          key: ${{ github.run_id }}-built-jars
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
