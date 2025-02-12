@@ -4,6 +4,11 @@ springdoc:
 server:
   port: 3000
 spring:
+  artemis:
+    mode: embedded
+    embedded:
+      persistent: false
+      enabled: true
   jta:
     enabled: true
   datasource:
