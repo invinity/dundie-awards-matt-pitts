@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import com.ninjaone.dundie_awards.AwardsCache;
 import com.ninjaone.dundie_awards.model.Activity;
 import com.ninjaone.dundie_awards.model.Employee;
@@ -25,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GiveDundieAwardsService {
     public static final String DUNDIE_MESSAGES_QUEUE = "dundie-messages";
+    private final TransactionTemplate transactionTemplate;
     private final EmployeeRepository employeeRepository;
     private final ActivityRepository activityRepository;
     private final AwardsCache awardsCache;
@@ -52,15 +55,16 @@ public class GiveDundieAwardsService {
      * @param awardCount the number of awards to give to each {@link Employee}
      * @return The number of {@link Employee}s were updated
      */
-    @Transactional
     public Integer giveDundieAwardsByOrganization(Organization organization, int awardCount) {
-        int employeeCount =
-                employeeRepository.addDundieAwardsByOrganization(organization, awardCount);
-        jmsTemplate.convertAndSend(DUNDIE_MESSAGES_QUEUE,
-                AwardsGivenMessage.builder().awardCount(awardCount)
-                        .affectedEmployeeCount(employeeCount)
-                        .thread(Thread.currentThread().getName()).build());
-        return employeeCount;
+        return transactionTemplate.execute(status -> {
+            int employeeCount =
+                    employeeRepository.addDundieAwardsByOrganization(organization, awardCount);
+            jmsTemplate.convertAndSend(DUNDIE_MESSAGES_QUEUE,
+                    AwardsGivenMessage.builder().awardCount(awardCount)
+                            .affectedEmployeeCount(employeeCount)
+                            .thread(Thread.currentThread().getName()).build());
+            return employeeCount;
+        });
     }
 
     @JmsListener(destination = DUNDIE_MESSAGES_QUEUE)

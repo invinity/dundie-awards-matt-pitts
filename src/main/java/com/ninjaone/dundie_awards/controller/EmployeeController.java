@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +16,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.ninjaone.dundie_awards.model.Employee;
 import com.ninjaone.dundie_awards.repository.EmployeeRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 
 @Controller
 @RequestMapping("/employees")
@@ -30,6 +35,7 @@ public class EmployeeController {
 
     /**
      * Get all employees
+     * 
      * @return
      */
     @GetMapping
@@ -40,6 +46,7 @@ public class EmployeeController {
 
     /**
      * Create employee
+     * 
      * @param employee
      * @return
      */
@@ -51,12 +58,22 @@ public class EmployeeController {
 
     /**
      * Get employee by id
+     * 
      * @param id
      * @return
      */
     @GetMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
+    @Operation(summary = "Get an employee by ID",
+            parameters = {@Parameter(name = "id", description = "The ID of the employee to retrieve",
+                    in = ParameterIn.PATH, required = true)},
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "Employee retrieved successfully",
+                            content = @Content(schema = @Schema(implementation = Employee.class))),
+                    @ApiResponse(responseCode = "404",
+                            description = "The given employee could not be found")})
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable("id") Long id) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
         if (optionalEmployee.isPresent()) {
             return ResponseEntity.ok(optionalEmployee.get());
@@ -67,13 +84,25 @@ public class EmployeeController {
 
     /**
      * Update employee by id
+     * 
      * @param id
      * @param employeeDetails
      * @return
      */
     @PutMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails) {
+    @Operation(summary = "Update an employee by ID",
+            parameters = {@Parameter(name = "id", description = "The ID of the employee to update",
+                    in = ParameterIn.PATH, required = true)},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(schema = @Schema(implementation = Employee.class))),
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "Employee updated successfully"),
+                    @ApiResponse(responseCode = "404",
+                            description = "The given employee could not be found")})
+    public ResponseEntity<Employee> updateEmployee(@PathVariable("id") Long id,
+            @RequestBody Employee employeeDetails) {
         return employeeRepository.findById(id).map(existing -> {
             existing.setFirstName(employeeDetails.getFirstName());
             existing.setLastName(employeeDetails.getLastName());
@@ -85,12 +114,21 @@ public class EmployeeController {
 
     /**
      * Delete employee by id
+     * 
      * @param id
      * @return
      */
     @DeleteMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Map<String, Boolean>> deleteEmployee(@PathVariable Long id) {
+    @Operation(summary = "Delete an employee by ID",
+            parameters = {@Parameter(name = "id", description = "The ID of the employee to delete",
+                    in = ParameterIn.PATH, required = true)},
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "Employee deleted successfully"),
+                    @ApiResponse(responseCode = "404",
+                            description = "The given employee could not be found")})
+    public ResponseEntity<Map<String, Boolean>> deleteEmployee(@PathVariable("id") Long id) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
         if (!optionalEmployee.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

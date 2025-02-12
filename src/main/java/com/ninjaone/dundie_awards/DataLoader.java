@@ -29,15 +29,13 @@ public class DataLoader implements CommandLineRunner {
         // organizationRepository.deleteAll();
 
         if (employeeRepository.count() == 0) {
-            Organization organizationPikashu = Organization.builder().name("Pikashu").build();
-            organizationRepository.save(organizationPikashu);
+            Organization organizationPikashu = organizationRepository.save(Organization.builder().name("Pikashu").build());
 
             employeeRepository.save(Employee.builder().firstName("John").lastName("Doe").organization(organizationPikashu).build());
             employeeRepository.save(Employee.builder().firstName("Jane").lastName("Smith").organization(organizationPikashu).build());
             employeeRepository.save(Employee.builder().firstName("Creed").lastName("Braton").organization(organizationPikashu).build());
 
-            Organization organizationSquanchy = Organization.builder().name("Squanchy").build();
-            organizationRepository.save(organizationSquanchy);
+            Organization organizationSquanchy = organizationRepository.save(Organization.builder().name("Squanchy").build());
 
             employeeRepository.save(Employee.builder().firstName("Michael").lastName("Scott").organization(organizationSquanchy).build());
             employeeRepository.save(Employee.builder().firstName("Dwight").lastName("Schrute").organization(organizationSquanchy).build());

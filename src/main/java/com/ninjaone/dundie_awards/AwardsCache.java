@@ -15,7 +15,7 @@ public class AwardsCache {
      * Set the total awards count
      * @param totalAwards
      */
-    public void setTotalAwards(int totalAwards) {
+    public void setTotalAwards(long totalAwards) {
         this.totalAwards.set(totalAwards);
     }
 

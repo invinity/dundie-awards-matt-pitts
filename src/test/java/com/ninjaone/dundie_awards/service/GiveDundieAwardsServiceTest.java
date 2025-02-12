@@ -64,6 +64,9 @@ class GiveDundieAwardsServiceTest {
     @Autowired
     private OrganizationRepository realOrganizationRepository;
 
+    @Autowired
+    private TransactionTemplate transactionTemplate;
+
     private Organization organization1, organization2;
 
     @BeforeEach
@@ -86,7 +89,7 @@ class GiveDundieAwardsServiceTest {
         int expectedCount = 10;
         when(mockEmployeeRepository.addDundieAwardsByOrganization(eq(organization), eq(awardCount)))
                 .thenReturn(expectedCount);
-        GiveDundieAwardsService underTest = new GiveDundieAwardsService(mockEmployeeRepository,
+        GiveDundieAwardsService underTest = new GiveDundieAwardsService(transactionTemplate, mockEmployeeRepository,
                 mockActivityRepository, awardsCache, mockJmsTemplate);
         Integer result = underTest.giveDundieAwardsByOrganization(organization, awardCount);
         assertEquals(expectedCount, result);
@@ -103,7 +106,7 @@ class GiveDundieAwardsServiceTest {
         doThrow(new RuntimeException("JMS error")).when(mockJmsTemplate).convertAndSend(
                 eq(GiveDundieAwardsService.DUNDIE_MESSAGES_QUEUE),
                 any(GiveDundieAwardsService.AwardsGivenMessage.class));
-        GiveDundieAwardsService underTest = new GiveDundieAwardsService(realEmployeeRepository,
+        GiveDundieAwardsService underTest = new GiveDundieAwardsService(transactionTemplate, realEmployeeRepository,
                 mockActivityRepository, awardsCache, mockJmsTemplate);
         Map<Long, Integer> originalOrg1Counts = getEmployeeAwardCounts(organization1);
         assertThat(originalOrg1Counts, aMapWithSize(10));
@@ -122,7 +125,7 @@ class GiveDundieAwardsServiceTest {
         Map<Long, Integer> originalOrg2Counts = getEmployeeAwardCounts(organization2);
         assertThat(originalOrg2Counts, aMapWithSize(5));
         int awardCount = 5;
-        GiveDundieAwardsService underTest = new GiveDundieAwardsService(realEmployeeRepository,
+        GiveDundieAwardsService underTest = new GiveDundieAwardsService(transactionTemplate, realEmployeeRepository,
                 mockActivityRepository, awardsCache, mockJmsTemplate);
         Integer updateCount = underTest.giveDundieAwardsByOrganization(organization1, awardCount);
         assertThat(updateCount, is(10));
