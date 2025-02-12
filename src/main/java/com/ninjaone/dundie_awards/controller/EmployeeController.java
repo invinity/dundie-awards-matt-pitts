@@ -107,7 +107,6 @@ public class EmployeeController {
             existing.setFirstName(employeeDetails.getFirstName());
             existing.setLastName(employeeDetails.getLastName());
             existing.setOrganization(employeeDetails.getOrganization());
-            existing.setDundieAwards(employeeDetails.getDundieAwards());
             return ResponseEntity.ok(employeeRepository.save(existing));
         }).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }

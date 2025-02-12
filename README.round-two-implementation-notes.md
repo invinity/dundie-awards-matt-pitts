@@ -1,20 +1,26 @@
+# Matt's Round Two Implementation, Improvements and Fixes
+
+This PR represents work that I did to the original dundie-awards application for the following items:
+
 ## 1. Implement the Endpoint 
 > Create the endpoint "/give-dundie-awards/{organizationId}". This endpoint should increase the number of Dundie awards for each employee in the specified organization by 1. Ensure that any related updates are also handled appropriately. 
 
-- Implementing this endpoint as-is would have been more JSON-RPC style design than REST, since this is essentally a *verb* as a URL. Good REST design is typically to have URLs be *nouns* representing an actual *resource*. Mutating activities we perform on these resources would be done using the various HTTP methods (POST, PUT, DELETE). 
+- Implementing this endpoint as-is would have been more JSON-RPC style design than REST, since this is essentally an action (or *verb*) as a URL instead of a *noun*. Good REST design is typically to have URLs be *nouns* representing an actual *resource*. Mutating activities we perform on these resources would be done using the various HTTP methods (POST, PUT, DELETE). 
 - For this reason, I implemented this as a *POST* request to `/organization/{id}/employees`. This URL represents the *resource* that is "all employees in a given organization". The *POST* request itself will represent a `OrganizationEmployeeAction` that is to be performed on all employees of that `Organization`.
 - For the specific use-case of *giving Dundie awards to all employees of an organization*, there is an action type of `GiveDundieAwardsAction`, which when *POST*ed to this REST endpoint will perform the action to give the awards.
+- The code to perform the actual update to stored data for the "giving of awards" is encapsulated into a new `@Service` called `GiveDundieAwardsService`.
 ## 2. Complete Additional Improvements 
 > Address any additional improvements discussed during the call, including those you identified yourself. Please be mindful of your time—focus on changes that are manageable within the given timeframe. 
 - Fixed `AwardsCache` to use `AtomicLong` for proper concurrent access and to avoid integer-overrun
 - Added working StringDoc and Swagger UI page
 - Added SpringDoc `@Operation` annotations to detail REST semantics and generate accurate openapi spec
-- Added tests to >60% coverage
+- Added test across the codebase to bring it to >60% coverage
 - Added javadoc in many places
 - Added lombok and reduced boilerplate code
 - Replaced field-based spring dependency injection with constructor-based; using `final` fields
 - Centralized business logic into `@Service` classes
 - `EmployeeController` now only requires a single injected dependency
+- Added use of JPA `@Version` for proper optimistic locking
 ## 3. Finish Message Broker Implementation 
 > Complete the implementation of the Message Broker by either introducing a library or creating a basic publish/subscribe mechanism. 
 - Applied the use of JMS via the `@EnableJms` Spring annotation
@@ -23,10 +29,11 @@
 ## 4. Asynchronous Activity Creation 
 > Implement the creation of an Activity when awards are added to an organization. This should be done asynchronously by subscribing to notifications from the Message Broker. 
 - This was implemented using a method annotated with `@JmsListener` leveraging reliable JMS messaging
+- This activity takes place in the `@Service` layer as well, keeping business logic (e.g. use-case) activities more organized
 ## 5. Implement Rollback Mechanism 
->Develop a mechanism to roll back the award distribution if the Activity creation fails.
+> Develop a mechanism to roll back the award distribution if the Activity creation fails.
 ### This part is tricky :-)
-- Because `Activity` entities are to be recorded asynchronously from the update to give awards, there is no way to leverage a *true*, *ACID*-compliant database rollback
+- Because `Activity` entities are to be recorded asynchronously from the update to give awards, there is no way to leverage a *true*, *ACID*-compliant database rollback asynchronously since the orginal transaction will have been already committed.
 - Spring's `@Transactional` and `@Async` capabilities might seem applicable here, however, transaction contexts don't pass into asynchronous calls. So I don't see this working correctly to meet the requirements.
 
 #### A "Ledger" Implementation?
@@ -38,11 +45,11 @@
     - This ledger will itself require some form of persistent storage, which could also fail.
         - This essentially creates the same problem of having additional persistence in the original request-processing thread
 #### A Practical Interpretation
-- I break this down into a few specialized requirements here:
-    1. A *Functional Requirement (FR)* that there is some record of the original award-giving activity (e.g. an audit log)
-    1. A *FR* that this audit-log recording be done into the actual database and not some other form of audit-logging (based on the use of the `Activity` entity)
+- First, to help with design decisions, let's break this down into a few specialized requirements:
+    1. A requirement that there is some record of the original award-giving activity (e.g. an audit log)
+    1. A requirement that this audit-log recording be done into the actual database and not some other form of audit-logging (based on the use of the `Activity` entity)
         - This could be implemented in another way altogether like structured logging to a centralized system
-    1. A *Non-Functional Requirement (NFR)* that the writing of this `Activity` record to the database be done asynchronously to avoid any issue with this database activity interrupting or impacting the activity to respond to the original award-giving request
+    1. A requirement that the writing of this `Activity` record to the database be done asynchronously to avoid any issue with this database activity interrupting or impacting the activity to respond to the original award-giving request
 - There are established patterns for accomplishing this type of thing in a reliable way
     - Namely the use of a reliable message-queue system that is written to as part of the original transaction
     - A *JTA* `TransactionManager` implementation can be added for true multi-system transaction control and rollback
@@ -50,7 +57,7 @@
     - Reliable message queues are purpose-built for this use-case to allow for very fast, but reliable message delivery with least impact to the original thread publishing the message
     - We have a guarantee from the messaging application that the message is delivered and will survive an outage
     - We can then implement a subscriber to these messages that writes the `Activity` database records appropriately
-### How I accomplished the above NF and NFR
+### How I accomplished the above requirements
 1. Added *JMS* capabilities to the springboot application
 1. Added *JTA* capabilities to the springboot application
     - Used the *Atomikos* implementation
@@ -71,4 +78,5 @@
 #### Notes
 - Because the award-giving database activity *AND* the JMS message delivery occur in the same, logic transaction then a `RuntimeException` in either prevents both from succeeding.
 - Because this implementation uses a reliable message-queue, it can be configured with additional semantics for retries, etc. to ensure reliable creation of the `Activity` database entry *without* doing it in the original request-handling thread
+- This implementation still uses the default H2 database and would need more complete testing around the transaction handling to ensure proper function
 - Kafka might be a more preferred message-queue system for this type of thing, but using *JMS* simplified the changes for this assignment
