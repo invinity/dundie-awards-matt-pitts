@@ -29,18 +29,18 @@ public class DataLoader implements CommandLineRunner {
         // organizationRepository.deleteAll();
 
         if (employeeRepository.count() == 0) {
-            Organization organizationPikashu = organizationRepository.save(Organization.builder().name("Pikashu").build());
+            Organization organizationPikashu = organizationRepository.saveAndFlush(Organization.builder().name("Pikashu").build());
 
-            employeeRepository.save(Employee.builder().firstName("John").lastName("Doe").organization(organizationPikashu).build());
-            employeeRepository.save(Employee.builder().firstName("Jane").lastName("Smith").organization(organizationPikashu).build());
-            employeeRepository.save(Employee.builder().firstName("Creed").lastName("Braton").organization(organizationPikashu).build());
+            employeeRepository.saveAndFlush(Employee.builder().firstName("John").lastName("Doe").organization(organizationPikashu).build());
+            employeeRepository.saveAndFlush(Employee.builder().firstName("Jane").lastName("Smith").organization(organizationPikashu).build());
+            employeeRepository.saveAndFlush(Employee.builder().firstName("Creed").lastName("Braton").organization(organizationPikashu).build());
 
-            Organization organizationSquanchy = organizationRepository.save(Organization.builder().name("Squanchy").build());
+            Organization organizationSquanchy = organizationRepository.saveAndFlush(Organization.builder().name("Squanchy").build());
 
-            employeeRepository.save(Employee.builder().firstName("Michael").lastName("Scott").organization(organizationSquanchy).build());
-            employeeRepository.save(Employee.builder().firstName("Dwight").lastName("Schrute").organization(organizationSquanchy).build());
-            employeeRepository.save(Employee.builder().firstName("Jim").lastName("Halpert").organization(organizationSquanchy).build());
-            employeeRepository.save(Employee.builder().firstName("Pam").lastName("Beesley").organization(organizationSquanchy).build());
+            employeeRepository.saveAndFlush(Employee.builder().firstName("Michael").lastName("Scott").organization(organizationSquanchy).build());
+            employeeRepository.saveAndFlush(Employee.builder().firstName("Dwight").lastName("Schrute").organization(organizationSquanchy).build());
+            employeeRepository.saveAndFlush(Employee.builder().firstName("Jim").lastName("Halpert").organization(organizationSquanchy).build());
+            employeeRepository.saveAndFlush(Employee.builder().firstName("Pam").lastName("Beesley").organization(organizationSquanchy).build());
         }
 
         int totalAwards = employeeRepository.findAll().stream()
