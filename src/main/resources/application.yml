@@ -7,12 +7,19 @@ server:
 spring:
   jta:
     enabled: true
+    atomikos:
+      properties:
+        enable-logging: false
+  # datasource:
+  #   url: jdbc:h2:mem:mydb;DB_CLOSE_DELAY=-1;AUTOCOMMIT=OFF
+  #   username: sa
+  #   password: password
+  #   driverClassName: org.h2.Driver
+  #   type: org.h2.jdbcx.JdbcDataSource
   datasource:
-    url: jdbc:h2:mem:mydb;DB_CLOSE_DELAY=-1;AUTOCOMMIT=OFF
-    username: sa
-    password: password
-    driverClassName: org.h2.Driver
-    type: org.h2.jdbcx.JdbcDataSource
+   url: jdbc:postgresql://localhost:5432/postgres
+   username: postgres
+   password: mattisok
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     properties:
@@ -20,25 +27,13 @@ spring:
         persistence:
           transactionType: JTA
       hibernate:
+        # dialect: org.hibernate.dialect.H2Dialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         transaction:
           jta:
             platform: org.hibernate.engine.transaction.jta.platform.internal.AtomikosJtaPlatform
     hibernate:
       ddl-auto: update
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/postgres
-#    username: postgres
-#    password: postgres
-#  jpa:
-#    show-sql: true
-#    properties:
-#      ## Hibernate Properties
-#      # The SQL dialect makes Hibernate generate better SQL for the chosen database
-#      hibernate:
-#        dialect: org.hibernate.dialect.PostgreSQLDialect
-#    # Hibernate ddl auto (create, create-drop, validate, update)
-#    hibernate:
-#      ddl-auto: update
   thymeleaf: # Thymeleaf
     cache: false
     mode: HTML
