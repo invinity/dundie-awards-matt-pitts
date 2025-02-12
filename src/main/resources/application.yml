@@ -11,13 +11,11 @@ spring:
     username: sa
     password: password
     driverClassName: org.h2.Driver
-    type: org.h2.jdbcx.JdbcDataSource
   # datasource:
   #  url: jdbc:postgresql://localhost:5432/postgres
   #  username: postgres
   #  password: xxxxxxxx
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
     properties:
       jakarta:
         persistence:
