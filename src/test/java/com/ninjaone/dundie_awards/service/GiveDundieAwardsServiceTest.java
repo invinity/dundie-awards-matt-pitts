@@ -8,12 +8,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.apache.activemq.artemis.reader.TextMessageUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,11 +30,15 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import com.ninjaone.dundie_awards.AwardsCache;
 import com.ninjaone.dundie_awards.config.TransactionManagementConfig;
+import com.ninjaone.dundie_awards.model.Activity;
 import com.ninjaone.dundie_awards.model.Employee;
 import com.ninjaone.dundie_awards.model.Organization;
 import com.ninjaone.dundie_awards.repository.ActivityRepository;
 import com.ninjaone.dundie_awards.repository.EmployeeRepository;
 import com.ninjaone.dundie_awards.repository.OrganizationRepository;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.TextMessage;
 import jakarta.persistence.EntityManager;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,6 +60,12 @@ class GiveDundieAwardsServiceTest {
     @Mock
     private JmsTemplate mockJmsTemplate;
 
+    @Mock
+    private ObjectMessage mockObjectMessage;
+
+    @Mock
+    private TextMessage mockTextMessage;
+
     @Autowired
     private EntityManager entityManager;
 
@@ -63,9 +75,6 @@ class GiveDundieAwardsServiceTest {
 
     @Autowired
     private OrganizationRepository realOrganizationRepository;
-
-    @Autowired
-    private TransactionTemplate transactionTemplate;
 
     private Organization organization1, organization2;
 
@@ -89,7 +98,7 @@ class GiveDundieAwardsServiceTest {
         int expectedCount = 10;
         when(mockEmployeeRepository.addDundieAwardsByOrganization(eq(organization), eq(awardCount)))
                 .thenReturn(expectedCount);
-        GiveDundieAwardsService underTest = new GiveDundieAwardsService(transactionTemplate, mockEmployeeRepository,
+        GiveDundieAwardsService underTest = new GiveDundieAwardsService(mockEmployeeRepository,
                 mockActivityRepository, awardsCache, mockJmsTemplate);
         Integer result = underTest.giveDundieAwardsByOrganization(organization, awardCount);
         assertEquals(expectedCount, result);
@@ -106,7 +115,7 @@ class GiveDundieAwardsServiceTest {
         doThrow(new RuntimeException("JMS error")).when(mockJmsTemplate).convertAndSend(
                 eq(GiveDundieAwardsService.DUNDIE_MESSAGES_QUEUE),
                 any(GiveDundieAwardsService.AwardsGivenMessage.class));
-        GiveDundieAwardsService underTest = new GiveDundieAwardsService(transactionTemplate, realEmployeeRepository,
+        GiveDundieAwardsService underTest = new GiveDundieAwardsService(realEmployeeRepository,
                 mockActivityRepository, awardsCache, mockJmsTemplate);
         Map<Long, Integer> originalOrg1Counts = getEmployeeAwardCounts(organization1);
         assertThat(originalOrg1Counts, aMapWithSize(10));
@@ -125,7 +134,7 @@ class GiveDundieAwardsServiceTest {
         Map<Long, Integer> originalOrg2Counts = getEmployeeAwardCounts(organization2);
         assertThat(originalOrg2Counts, aMapWithSize(5));
         int awardCount = 5;
-        GiveDundieAwardsService underTest = new GiveDundieAwardsService(transactionTemplate, realEmployeeRepository,
+        GiveDundieAwardsService underTest = new GiveDundieAwardsService(realEmployeeRepository,
                 mockActivityRepository, awardsCache, mockJmsTemplate);
         Integer updateCount = underTest.giveDundieAwardsByOrganization(organization1, awardCount);
         assertThat(updateCount, is(10));
@@ -135,6 +144,33 @@ class GiveDundieAwardsServiceTest {
                 is(count + awardCount)));
         originalOrg2Counts
                 .forEach((employee, count) -> assertThat(newOrg2Counts.get(employee), is(count)));
+    }
+
+    @Test
+    void receiveDundieMessage_should_process_valid_message() throws JMSException {
+        GiveDundieAwardsService.AwardsGivenMessage agMessage = GiveDundieAwardsService.AwardsGivenMessage.builder()
+                        .awardCount(5)
+                        .affectedEmployeeCount(10)
+                        .thread("test-thread")
+                        .build();
+        when(mockObjectMessage.getBody(GiveDundieAwardsService.AwardsGivenMessage.class)).thenReturn(agMessage);
+
+        GiveDundieAwardsService underTest = new GiveDundieAwardsService(mockEmployeeRepository,
+        mockActivityRepository, awardsCache, mockJmsTemplate);
+        underTest.receiveDundieMessage(mockObjectMessage);
+
+        verify(mockActivityRepository, times(1)).save(any(Activity.class));
+        assertThat(awardsCache.getTotalAwards(), is(50L));
+    }
+
+    @Test
+    void receiveDundieMessage_should_not_process_invalid_message() throws JMSException {
+        GiveDundieAwardsService underTest = new GiveDundieAwardsService(mockEmployeeRepository,
+        mockActivityRepository, awardsCache, mockJmsTemplate);
+        underTest.receiveDundieMessage(mockTextMessage);
+
+        verify(mockActivityRepository, never()).save(any(Activity.class));
+        assertThat(awardsCache.getTotalAwards(), is(0L));
     }
 
 

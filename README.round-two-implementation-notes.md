@@ -6,8 +6,10 @@
 - For the specific use-case of *giving Dundie awards to all employees of an organization*, there is an action type of `GiveDundieAwardsAction`, which when *POST*ed to this REST endpoint will perform the action to give the awards.
 ## 2. Complete Additional Improvements 
 > Address any additional improvements discussed during the call, including those you identified yourself. Please be mindful of your time—focus on changes that are manageable within the given timeframe. 
-- Fixed `AwardsCache` to use `AtomicLong` for proper concurrency and to avoid integer-overrun
-- Added tests to >80% coverage
+- Fixed `AwardsCache` to use `AtomicLong` for proper concurrent access and to avoid integer-overrun
+- Added working StringDoc and Swagger UI page
+- Added SpringDoc `@Operation` annotations to detail REST semantics and generate accurate openapi spec
+- Added tests to >60% coverage
 - Added javadoc in many places
 - Added lombok and reduced boilerplate code
 - Replaced field-based spring dependency injection with constructor-based; using `final` fields
