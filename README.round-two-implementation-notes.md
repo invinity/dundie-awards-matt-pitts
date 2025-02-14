@@ -60,8 +60,7 @@ This PR represents work that I did to the original dundie-awards application for
     - We can then implement a subscriber to these messages that writes the `Activity` database records appropriately
 ### How I accomplished the above requirements
 1. Added *JMS* capabilities to the springboot application
-1. Added *JTA* capabilities to the springboot application
-    - Used the *Atomikos* implementation
+1. Set auto-commit=off for database activity and replaced with `@Transactional` usage in Spring
 1. Centralized the award-giving business logic into a new spring `@Service` called `GiveDundieAwardsService`
 1. This Service has a method `giveDundieAwardsByOrganization` that:
     1. Uses dependencies:

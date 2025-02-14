@@ -12,27 +12,24 @@ spring:
   jta:
     enabled: true
   datasource:
-    # hikari:
-    #   auto-commit: false
-    # url: jdbc:h2:mem:mydb;DB_CLOSE_DELAY=-1;AUTOCOMMIT=OFF
-    # username: sa
-    # password: password
-    # driverClassName: org.h2.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: mattisok
-    driverClassName: org.postgresql.Driver
+    hikari:
+      auto-commit: false
+    url: jdbc:h2:mem:mydb;DB_CLOSE_DELAY=-1;AUTOCOMMIT=OFF
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+    # url: jdbc:postgresql://localhost:5432/postgres
+    # username: postgres
+    # password: mattisok
+    # driverClassName: org.postgresql.Driver
   jpa:
     properties:
       jakarta:
         persistence:
-          transactionType: JTA
+          transactionType: RESOURCE_LOCAL
       hibernate:
-        # dialect: org.hibernate.dialect.H2Dialect
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        transaction:
-          jta:
-            platform: org.hibernate.engine.transaction.jta.platform.internal.AtomikosJtaPlatform
+        dialect: org.hibernate.dialect.H2Dialect
+        # dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
   thymeleaf: # Thymeleaf
