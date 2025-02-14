@@ -3,37 +3,41 @@ springdoc:
     path: /openapi
 server:
   port: 3000
-
 spring:
-  spring:
-    datasource:
-      url: jdbc:h2:mem:mydb
-      username: sa
-      password: password
-      driverClassName: org.h2.Driver
-    jpa:
-      spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/postgres
-#    username: postgres
-#    password: postgres
-#  jpa:
-#    show-sql: true
-#    properties:
-#      ## Hibernate Properties
-#      # The SQL dialect makes Hibernate generate better SQL for the chosen database
-#      hibernate:
-#        dialect: org.hibernate.dialect.PostgreSQLDialect
-#    # Hibernate ddl auto (create, create-drop, validate, update)
-#    hibernate:
-#      ddl-auto: update
+  artemis:
+    mode: embedded
+    embedded:
+      persistent: false
+      enabled: true
+  jta:
+    enabled: true
+  datasource:
+    hikari:
+      auto-commit: false
+    url: jdbc:h2:mem:mydb;DB_CLOSE_DELAY=-1;AUTOCOMMIT=OFF
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+    # url: jdbc:postgresql://localhost:5432/postgres
+    # username: postgres
+    # password: mattisok
+    # driverClassName: org.postgresql.Driver
+  jpa:
+    properties:
+      jakarta:
+        persistence:
+          transactionType: RESOURCE_LOCAL
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        # dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
   thymeleaf: # Thymeleaf
     cache: false
     mode: HTML
     encoding: UTF-8
-    prefix: file:src/main/resources/static/
+    prefix: classpath:static/
   web:
     resources:
-      static-locations: file:src/main/resources/static/
       cache:
         period: 0

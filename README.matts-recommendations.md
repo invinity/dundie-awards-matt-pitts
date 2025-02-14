@@ -1,0 +1,72 @@
+# Matt's Recommendations for this Project/Codebase
+
+Below are individual sections categorizing the recommendations I have for this project.
+
+## Github Project-Level
+1. Enabled Dependency Graphing in the repo
+2. Enabled branch protection with code quality checks
+3. Setup API Tokens for Github Actions to be able to interact with the project
+
+## Gradle build & CI/CD
+1. Added Github Actions to execute Gradle build and test
+2. Added Gradle jacoco plugin and Github Actions to perform Test Coverage analysis
+3. Added Github Actions to construct Docker, publish and deploy into AWS ECS
+4. Added `org.springframework.boot:spring-boot-devtools` for more convenient local development
+
+## General Application/Code
+1. References springdoc in config, but doesn't include it in gradle
+    - Added springdoc to gradle build, swagger-ui now present
+3. No real tests
+    - Added `EmployeeControllerTest`
+    - Added `EmployeeTest`
+    - Added `OrganizationTest`
+    - Reported test coverage is now `>80%`
+4. Added lombok for cleaner class instance usage
+    - Removed boilerplate getter/setter/constructor code
+5. No javadoc
+    - Recommend writing javadoc along with publishing javadoc-jar as a general best-practise
+    - Added javadoc in several places
+6. JPA Entity types don't have `@Version` field
+    - The `@Version` field is very useful as it applies a built-in Optimistic locking strategy when performing entity updates
+    - This helps to avoid lost changes when two copies of the same object are updated simultaneously across the application
+
+
+## REST Layer
+
+### OpenAPI Spec
+1. Make use of springdoc to annotate and document the expected HTTP payloads and responses
+    - added `@Operation` declarations to provide 1-1 match b/t generated OpenAPI Spec and what the service expects
+
+### EmployeeController
+1. No way to update `Employee`'s `organziation` on an existing record
+    - fixed
+2. No way to update `Employee`'s `dundieAwards` count on an existing record
+    - fixed
+3. Imports the following Spring Components but does not use them
+    - `ActivityRepository`
+    - `MessageBroker`
+    - `AwardsCache`
+4. Controller has too many concerns if there's supposed to be caching, etc.
+    - Controllers should just be a demarcation layer b/t a backend service and the appropriate HTTP/REST responses
+    - Something like caching should be abstracted out in another layer
+    - The `@Cacheable` annotation can be used to apply built-in caching mechansims from Spring-Data
+5. `/employees` REST path is specified in every mapped method, rather than at the Controller class-level
+    - fixed
+
+### No controller for `Organization`s
+
+### Security
+- No authorization/authentication exist on the API, which may or may not be acceptable depending on the application
+
+### Error responses
+
+- The REST controllers largely rely on built-in Spring error handling to create a corresponding HTTP response
+    - Example: `POST`ing a new Employee with an assigned `Organization` `id` that does not exist produces a `500` response
+    - Since the error is really the result of the caller's submission payload, something in the 4xx status-code family would likely be a better response
+
+## Larger Initiatives
+### Refactor with clean-architecture design
+- Improves Domain-Driven design paradigms
+- Improves component decoupling and therefore testing
+- Makes future refactorings less challenging
+- Allows for more natural decisioning when organizing new code/features
