@@ -63,7 +63,7 @@ jobs:
         token: ${{ secrets.PR_CHECK_GITHUB_TOKEN }}
         min-coverage-overall: 40
         min-coverage-changed-files: 60
-        update-comment: true
+        update-comment: false
         title: "Test Coverage Report"
 
   deploy:

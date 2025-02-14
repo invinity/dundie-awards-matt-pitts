@@ -66,7 +66,7 @@ This PR represents work that I did to the original dundie-awards application for
     1. Uses dependencies:
         - `EmployeeRepository`
         - `JmsTemplate`
-    1. And performs *both* of the following in a single, JTA transaction:
+    1. And performs *both* of the following in a single, logical transaction:
         1. The award-giving update across all `Employee`s in a given `Organization`
         1. Inserts a message into the message-queue indicating this activity took place
             - The message is a serializable object type carrying meta information about the award-giving activity
