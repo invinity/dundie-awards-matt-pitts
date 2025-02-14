@@ -15,7 +15,6 @@ import static org.mockito.Mockito.when;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.apache.activemq.artemis.reader.TextMessageUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,11 +22,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import com.ninjaone.dundie_awards.AwardsCache;
 import com.ninjaone.dundie_awards.config.TransactionManagementConfig;
 import com.ninjaone.dundie_awards.model.Activity;
@@ -43,8 +45,10 @@ import jakarta.persistence.EntityManager;
 
 @ExtendWith(MockitoExtension.class)
 @DataJpaTest
-@ContextConfiguration(classes = TransactionManagementConfig.class)
+@ContextConfiguration(classes = {TransactionManagementConfig.class})
 @AutoConfigurationPackage(basePackages = "com.ninjaone.dundie_awards")
+@AutoConfigureTestDatabase(replace = Replace.NONE)
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
 class GiveDundieAwardsServiceTest {
     @Mock
     private PlatformTransactionManager mockTransactionManager;
@@ -80,16 +84,25 @@ class GiveDundieAwardsServiceTest {
 
     @BeforeEach
     void setUp() {
-        organization1 = realOrganizationRepository
-                .saveAndFlush(Organization.builder().name("Some Organization").build());
-        organization2 = realOrganizationRepository
-                .saveAndFlush(Organization.builder().name("Another Organization").build());
+        organization1 = saveOrganization(Organization.builder().name("Some Organization").build());
+        organization2 = saveOrganization(Organization.builder().name("Another Organization").build());
         IntStream.rangeClosed(1, 10).mapToObj(i -> createTestEmployee(organization1, i))
                 .forEach(realEmployeeRepository::saveAndFlush);
 
         IntStream.rangeClosed(11, 15).mapToObj(i -> createTestEmployee(organization2, i))
                 .forEach(realEmployeeRepository::saveAndFlush);
     }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    Organization saveOrganization(Organization organization) {
+        return realOrganizationRepository.saveAndFlush(organization);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    Employee saveEmployee(Employee employee) {
+        return realEmployeeRepository.saveAndFlush(employee);
+    }
+
 
     @Test
     void giveDundieAwardsByOrganization_should_call_the_necessary_component_methods() {
