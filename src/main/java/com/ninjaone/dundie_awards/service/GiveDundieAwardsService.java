@@ -53,7 +53,7 @@ public class GiveDundieAwardsService {
      * @param awardCount the number of awards to give to each {@link Employee}
      * @return The number of {@link Employee}s were updated
      */
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    @Transactional(propagation = Propagation.REQUIRED)
     public Integer giveDundieAwardsByOrganization(Organization organization, int awardCount) {
         int employeeCount =
                 employeeRepository.addDundieAwardsByOrganization(organization, awardCount);
