@@ -11,10 +11,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.Arrays;
 import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -24,12 +22,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ninjaone.dundie_awards.AwardsCache;
 import com.ninjaone.dundie_awards.model.Employee;
 import com.ninjaone.dundie_awards.model.Organization;
-import com.ninjaone.dundie_awards.repository.ActivityRepository;
 import com.ninjaone.dundie_awards.repository.EmployeeRepository;
 
 @WebMvcTest(EmployeeController.class)
@@ -41,12 +36,6 @@ public class EmployeeControllerTest {
     @MockBean
     private EmployeeRepository employeeRepository;
 
-    @MockBean
-    private AwardsCache awardsCache;
-
-    @MockBean
-    private ActivityRepository activityRepository;
-
     @InjectMocks
     private EmployeeController employeeController;
 
@@ -55,7 +44,6 @@ public class EmployeeControllerTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         employee1 = Employee.builder().id(1L).firstName("John").lastName("Doe").build();
         employee2 = Employee.builder().id(2L).firstName("Jane").lastName("Doe").build();
     }

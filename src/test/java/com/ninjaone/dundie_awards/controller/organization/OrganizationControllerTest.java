@@ -24,8 +24,6 @@ import com.ninjaone.dundie_awards.repository.EmployeeRepository;
 import com.ninjaone.dundie_awards.repository.OrganizationRepository;
 import com.ninjaone.dundie_awards.service.GiveDundieAwardsService;
 
-
-
 @WebMvcTest(OrganizationController.class)
 public class OrganizationControllerTest {
 

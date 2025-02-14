@@ -12,14 +12,16 @@ spring:
   jta:
     enabled: true
   datasource:
+    hikari:
+      auto-commit: false
     url: jdbc:h2:mem:mydb;DB_CLOSE_DELAY=-1;AUTOCOMMIT=OFF
     username: sa
     password: password
     driverClassName: org.h2.Driver
-  # datasource:
-  #  url: jdbc:postgresql://localhost:5432/postgres
-  #  username: postgres
-  #  password: xxxxxxxx
+    # url: jdbc:postgresql://localhost:5432/postgres
+    # username: postgres
+    # password: password
+    # driverClassName: org.postgresql.Driver
   jpa:
     properties:
       jakarta:

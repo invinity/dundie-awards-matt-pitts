@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,10 +46,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
      */
     List<Employee> findByOrganization(Organization organization);
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    default Employee saveEmployee(Employee employee) {
-        return saveAndFlush(employee);
-    }
+    @Transactional(propagation = Propagation.MANDATORY)
+    @Override
+    @NonNull
+    <S extends Employee> S saveAndFlush(@NonNull S entity);
 
     @Query("SELECT x.id, x.dundieAwards FROM Employee x WHERE x.organization = ?1")
     List<Tuple> getEmployeeAwardCountsByOrganization(Organization organization);
@@ -57,4 +58,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
         return getEmployeeAwardCountsByOrganization(organization).stream()
                 .collect(Collectors.toMap(r -> r.get(0, Long.class), r -> r.get(1, Integer.class)));
     }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    void deleteAll();
 }

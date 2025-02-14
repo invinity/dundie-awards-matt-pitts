@@ -28,6 +28,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Propagation;
@@ -45,6 +46,7 @@ import jakarta.jms.ObjectMessage;
 import jakarta.jms.TextMessage;
 
 @SpringBootTest
+@ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
@@ -73,13 +75,13 @@ class GiveDundieAwardsServiceTest {
     void setUp() {
         realEmployeeRepository.deleteAll();
         realOrganizationRepository.deleteAll();
-        organization1 = realOrganizationRepository.saveOrganization(Organization.builder().name("Some Organization").build());
-        organization2 = realOrganizationRepository.saveOrganization(Organization.builder().name("Another Organization").build());
+        organization1 = realOrganizationRepository.saveAndFlush(Organization.builder().name("Some Organization").build());
+        organization2 = realOrganizationRepository.saveAndFlush(Organization.builder().name("Another Organization").build());
         IntStream.rangeClosed(1, 10).mapToObj(i -> createTestEmployee(organization1, i))
-                .forEach(realEmployeeRepository::saveEmployee);
+                .forEach(realEmployeeRepository::saveAndFlush);
 
         IntStream.rangeClosed(11, 15).mapToObj(i -> createTestEmployee(organization2, i))
-                .forEach(realEmployeeRepository::saveEmployee);
+                .forEach(realEmployeeRepository::saveAndFlush);
     }
 
     @Test
