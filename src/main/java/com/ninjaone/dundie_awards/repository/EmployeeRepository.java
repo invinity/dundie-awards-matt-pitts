@@ -46,8 +46,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
      */
     List<Employee> findByOrganization(Organization organization);
 
-    @Transactional(propagation = Propagation.MANDATORY)
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Modifying(clearAutomatically = true)
     @NonNull
     <S extends Employee> S saveAndFlush(@NonNull S entity);
 
